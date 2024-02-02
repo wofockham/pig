@@ -73,7 +73,7 @@ const init = function () {
 // a function is just a thing inside a variable
 const render = function () {
     if (state.winner) {
-        elements.status.innerText = state.winner + 'wins';
+        elements.status.innerText = state.winner + ' wins';
         // TODO: hide this message again maybe?
     }
     elements.dice.innerHTML = SIDES[ state.rolls[0] ] + ' ' + SIDES[ state.rolls[1] ]; 
@@ -110,10 +110,11 @@ const detectBacon = function () {
 };
 
 const checkForWinner = function () {
-    if (state.totalPoints.player1 >= 100) {
-        state.winner = 'player1';
-    } else if (state.totalPoints.player2 >= 100) {
-        state.winner = 'player2';
+    const currentPlayer = state.player;
+    if (state.totalPoints[currentPlayer] + state.points >= 10) {
+        hold(currentPlayer);
+        state.winner = currentPlayer;
+        switchPlayer();
     }
 }
 
