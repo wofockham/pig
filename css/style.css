@@ -10,3 +10,7 @@ section {
     font-size: 200%;
     text-align: center;
 }
+
+.currentPlayer {
+    border: 5px solid blue;
+}
