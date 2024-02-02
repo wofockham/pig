@@ -1,6 +1,6 @@
 /*----- constants -----*/
 const SIDES = {
-    1: '&#x2680;',
+    1: '<span class="bacon">&#x2680;</span>',
     2: '&#x2681;',
     3: '&#x2682;',
     4: '&#x2683;',
@@ -10,6 +10,7 @@ const SIDES = {
 
 /*----- state variable -----*/
 const state = {
+    winner: false,
     player: '',
     totalPoints: {
         player1: 0,
@@ -22,6 +23,7 @@ const state = {
 /*----- cached elements  -----*/
 // An object that caches our frequently used DOM nodes
 const elements = {
+    status: document.getElementById('status'),
     dice: document.getElementById('dice'),
     points: document.getElementById('points'),
     player1TotalPoints: document.querySelector('.player1 .totalPoints'),
@@ -37,24 +39,29 @@ const elements = {
 
 /*----- event listeners -----*/
 elements.player1Roll.addEventListener('click', function () {
+    if (state.winner || state.player !== 'player1') return;
     rollPair();
 });
 
 elements.player2Roll.addEventListener('click', function () {
+    if (state.winner || state.player !== 'player2') return;
     rollPair();
 });
 
 elements.player1Hold.addEventListener('click', function () {
+    if (state.winner || state.player !== 'player1') return;
     hold('player1');
 });
 
 elements.player2Hold.addEventListener('click', function () {
+    if (state.winner || state.player !== 'player2') return;
     hold('player2');
 });
 
 
 /*----- functions -----*/
 const init = function () {
+    state.winner = false;
     state.player = 'player1';
     state.totalPoints.player1 = 0;
     state.totalPoints.player2 = 0;
@@ -65,6 +72,10 @@ const init = function () {
 
 // a function is just a thing inside a variable
 const render = function () {
+    if (state.winner) {
+        elements.status.innerText = state.winner + 'wins';
+        // TODO: hide this message again maybe?
+    }
     elements.dice.innerHTML = SIDES[ state.rolls[0] ] + ' ' + SIDES[ state.rolls[1] ]; 
     elements.points.innerText = state.points;
     elements.player1TotalPoints.innerText = state.totalPoints.player1; 
@@ -86,6 +97,26 @@ const switchPlayer = function () {
     }
 };
 
+const detectBacon = function () {
+    const currentPlayer = state.player;
+    if (state.rolls[0] === 1 && state.rolls[1] === 1) {
+        state.totalPoints[currentPlayer] = 0;
+        state.points = 0;
+        switchPlayer();
+    } else if (state.rolls[0] === 1 || state.rolls[1] === 1) {
+        state.points = 0;
+        switchPlayer();
+    }
+};
+
+const checkForWinner = function () {
+    if (state.totalPoints.player1 >= 100) {
+        state.winner = 'player1';
+    } else if (state.totalPoints.player2 >= 100) {
+        state.winner = 'player2';
+    }
+}
+
 const rollDie = function () {
     // round up to an integer between 1 and 6 inclusive
     return Math.ceil(  Math.random() * 6 );
@@ -94,7 +125,8 @@ const rollDie = function () {
 const rollPair = function () {
     state.rolls = [rollDie(), rollDie()]; // the actual dice rolls, ready to render
     state.points = state.points + (state.rolls[0] + state.rolls[1]);
-    // TODO: should we check for making bacon here?
+    detectBacon();
+    checkForWinner();
     render();
 };
 

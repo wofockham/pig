@@ -14,3 +14,7 @@ section {
 .currentPlayer {
     border: 5px solid blue;
 }
+
+.bacon {
+    background-color: pink;
+}
