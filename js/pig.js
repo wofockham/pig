@@ -111,7 +111,7 @@ const detectBacon = function () {
 
 const checkForWinner = function () {
     const currentPlayer = state.player;
-    if (state.totalPoints[currentPlayer] + state.points >= 10) {
+    if (state.totalPoints[currentPlayer] + state.points >= 100) {
         hold(currentPlayer);
         state.winner = currentPlayer;
         switchPlayer();
